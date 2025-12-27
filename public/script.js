@@ -25,7 +25,7 @@ loginBtn.addEventListener('click', () => {
         
         // Validation: Limit name to 25 characters
         if (inputName.length > 25) {
-            loginInput.style.borderColor = 'var(--theme-accent)';
+            loginInput.style.borderColor = '#9d174d';
             loginInput.placeholder = "Name too long (Max 25)";
             loginInput.value = "";
             return;
@@ -87,7 +87,7 @@ function appendMessage(msg) {
             <div class="message-text">${msg.text}</div>
         `;
 
-        // If it's an admin message, we can add a little spark effect to the UI
+        // If it's an admin message, trigger a subtle glow
         if (msg.isAdmin) {
             createAdminGlowEffect();
         }
@@ -99,13 +99,12 @@ function appendMessage(msg) {
 
 // Special visual feedback for Admin messages
 function createAdminGlowEffect() {
-    // Add temporary gold pulse to the container border
     const container = document.querySelector('.chat-container');
     if (container) {
-        container.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.3)';
+        container.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.2)';
         setTimeout(() => {
             container.style.boxShadow = '';
-        }, 1000);
+        }, 1500);
     }
 }
 
