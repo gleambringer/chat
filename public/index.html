@@ -18,23 +18,23 @@
 
     <!-- Login Overlay -->
     <div id="login-overlay">
-        <div class="chat-container" style="max-width: 400px; height: auto; padding: 3rem; text-align: center;">
-            <h1 style="margin-bottom: 2rem; font-size: 2.5rem; background: linear-gradient(to bottom, #ffffff, #9d174d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">gleam</h1>
-            <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem; font-size: 0.9rem;">enter a name to join the gleam</p>
-            <input type="text" id="username-input" placeholder="your name..." maxlength="15" style="width: 100%; margin-bottom: 1.5rem;">
-            <button id="login-btn" style="width: 100%; padding: 1rem;">Enter Chat</button>
+        <div class="login-box">
+            <h1>gleam</h1>
+            <p>enter a name to join the gleam</p>
+            <input type="text" id="username-input" placeholder="your name..." maxlength="15">
+            <button id="login-btn">Enter Chat</button>
         </div>
     </div>
 
     <!-- Main Chat UI -->
     <div class="chat-container">
         <header class="chat-header">
-            <div style="display: flex; align-items: center;">
+            <div class="header-left">
                 <span class="status-dot"></span>
                 <h1>gleam chat</h1>
             </div>
-            <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">
-                <a href="/" style="color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); padding: 0.4rem 1rem; border-radius: 999px; transition: all 0.3s ease;">Exit</a>
+            <div class="header-right">
+                <a href="/" class="exit-btn">Exit</a>
             </div>
         </header>
 
