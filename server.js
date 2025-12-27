@@ -7,22 +7,26 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Serve static files from the 'public' directory
+// The password is set via environment variable on Render
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "gleam_default_secret";
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Basic route to serve the chat interface
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Socket.io Logic
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-
-    // Handle joining the chat
-    socket.on('join', (username) => {
+    socket.on('join', (data) => {
+        // Data can be a string (username) or an object {username, password}
+        const username = typeof data === 'object' ? data.username : data;
+        const password = typeof data === 'object' ? data.password : '';
+        
         socket.username = username || 'Anonymous';
-        // Broadcast to others that a user joined
+        
+        // Check if user is an admin
+        socket.isAdmin = (password === ADMIN_PASSWORD);
+
         socket.broadcast.emit('message', {
             user: 'System',
             text: `${socket.username} has entered the gleam.`,
@@ -30,16 +34,15 @@ io.on('connection', (socket) => {
         });
     });
 
-    // Handle incoming messages
     socket.on('chatMessage', (msg) => {
         io.emit('message', {
             user: socket.username,
             text: msg,
+            isAdmin: socket.isAdmin,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
     });
 
-    // Handle disconnection
     socket.on('disconnect', () => {
         if (socket.username) {
             io.emit('message', {
@@ -48,7 +51,6 @@ io.on('connection', (socket) => {
                 type: 'system'
             });
         }
-        console.log('User disconnected:', socket.id);
     });
 });
 
