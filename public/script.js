@@ -18,36 +18,21 @@ let mouse = { x: -1000, y: -1000 };
 loginBtn.addEventListener('click', () => {
     const val = loginInput.value.trim();
     if (val) {
-        // Support for Admin Login via "Username:Password" syntax
-        const parts = val.split(':');
-        const inputName = parts[0];
-        const password = parts[1] || '';
-        
-        // Validation: Limit name to 25 characters
-        if (inputName.length > 25) {
-            loginInput.style.borderColor = '#9d174d';
-            loginInput.placeholder = "Name too long (Max 25)";
+        // Simple name validation (Max 15 characters to match HTML attribute)
+        if (val.length > 15) {
             loginInput.value = "";
+            loginInput.placeholder = "Name too long!";
             return;
         }
-
-        username = inputName;
+        username = val;
         loginOverlay.style.display = 'none';
-        
-        // Send as object to server.js
-        socket.emit('join', { 
-            username: username, 
-            password: password 
-        });
+        socket.emit('join', username);
     }
 });
 
 loginInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') loginBtn.click();
 });
-
-// Optional: Set the actual HTML attribute to 60 to account for "name:password" length
-loginInput.setAttribute('maxlength', '60');
 
 // Message Handling
 messageForm.addEventListener('submit', (e) => {
@@ -72,40 +57,19 @@ function appendMessage(msg) {
         div.textContent = msg.text;
     } else {
         const isOutgoing = msg.user === username;
-        // Check if message is marked as admin by the server
-        const adminClass = msg.isAdmin ? 'admin' : '';
-        div.className = `message ${isOutgoing ? 'outgoing' : 'incoming'} ${adminClass}`;
-        
-        // Prepend "Admin: " to the username if they have admin status
-        const displayName = msg.isAdmin ? `Admin: ${msg.user}` : msg.user;
+        div.className = `message ${isOutgoing ? 'outgoing' : 'incoming'}`;
         
         div.innerHTML = `
             <div class="message-info">
-                <span class="message-user">${displayName}</span>
+                <span class="message-user">${msg.user}</span>
                 <span class="message-time">${msg.time}</span>
             </div>
             <div class="message-text">${msg.text}</div>
         `;
-
-        // If it's an admin message, trigger a subtle glow
-        if (msg.isAdmin) {
-            createAdminGlowEffect();
-        }
     }
     
     messageContainer.appendChild(div);
     messageContainer.scrollTop = messageContainer.scrollHeight;
-}
-
-// Special visual feedback for Admin messages
-function createAdminGlowEffect() {
-    const container = document.querySelector('.chat-container');
-    if (container) {
-        container.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.2)';
-        setTimeout(() => {
-            container.style.boxShadow = '';
-        }, 1500);
-    }
 }
 
 // Gleam Background Animation
