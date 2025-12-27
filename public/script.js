@@ -20,9 +20,18 @@ loginBtn.addEventListener('click', () => {
     if (val) {
         // Support for Admin Login via "Username:Password" syntax
         const parts = val.split(':');
-        username = parts[0];
+        const inputName = parts[0];
         const password = parts[1] || '';
         
+        // Validation: Limit name to 25 characters
+        if (inputName.length > 25) {
+            loginInput.style.borderColor = 'var(--theme-accent)';
+            loginInput.placeholder = "Name too long (Max 25)";
+            loginInput.value = "";
+            return;
+        }
+
+        username = inputName;
         loginOverlay.style.display = 'none';
         
         // Send as object to server.js
@@ -36,6 +45,9 @@ loginBtn.addEventListener('click', () => {
 loginInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') loginBtn.click();
 });
+
+// Optional: Set the actual HTML attribute to 60 to account for "name:password" length
+loginInput.setAttribute('maxlength', '60');
 
 // Message Handling
 messageForm.addEventListener('submit', (e) => {
@@ -74,10 +86,27 @@ function appendMessage(msg) {
             </div>
             <div class="message-text">${msg.text}</div>
         `;
+
+        // If it's an admin message, we can add a little spark effect to the UI
+        if (msg.isAdmin) {
+            createAdminGlowEffect();
+        }
     }
     
     messageContainer.appendChild(div);
     messageContainer.scrollTop = messageContainer.scrollHeight;
+}
+
+// Special visual feedback for Admin messages
+function createAdminGlowEffect() {
+    // Add temporary gold pulse to the container border
+    const container = document.querySelector('.chat-container');
+    if (container) {
+        container.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.3)';
+        setTimeout(() => {
+            container.style.boxShadow = '';
+        }, 1000);
+    }
 }
 
 // Gleam Background Animation
