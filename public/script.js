@@ -18,9 +18,18 @@ let mouse = { x: -1000, y: -1000 };
 loginBtn.addEventListener('click', () => {
     const val = loginInput.value.trim();
     if (val) {
-        username = val;
+        // Support for Admin Login via "Username:Password" syntax
+        const parts = val.split(':');
+        username = parts[0];
+        const password = parts[1] || '';
+        
         loginOverlay.style.display = 'none';
-        socket.emit('join', username);
+        
+        // Send as object to server.js
+        socket.emit('join', { 
+            username: username, 
+            password: password 
+        });
     }
 });
 
@@ -51,11 +60,16 @@ function appendMessage(msg) {
         div.textContent = msg.text;
     } else {
         const isOutgoing = msg.user === username;
-        div.className = `message ${isOutgoing ? 'outgoing' : 'incoming'}`;
+        // Check if message is marked as admin by the server
+        const adminClass = msg.isAdmin ? 'admin' : '';
+        div.className = `message ${isOutgoing ? 'outgoing' : 'incoming'} ${adminClass}`;
+        
+        // Prepend "Admin: " to the username if they have admin status
+        const displayName = msg.isAdmin ? `Admin: ${msg.user}` : msg.user;
         
         div.innerHTML = `
             <div class="message-info">
-                <span class="message-user">${msg.user}</span>
+                <span class="message-user">${displayName}</span>
                 <span class="message-time">${msg.time}</span>
             </div>
             <div class="message-text">${msg.text}</div>
